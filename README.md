@@ -18,3 +18,24 @@ Configuración de variables específicas para el análisis del tráfico vehicula
 Supervisión y validación de datos recopilados antes de enviarlos al sistema FlowTrack.
 Funcionalidad independiente para monitoreo local sin conexión a la nube.
 LocalTrack es el núcleo operativo local que asegura un procesamiento rápido y eficiente en el sitio, optimizando la integración con FlowTrack para una solución completa de gestión vehicular.
+
+
+localtrack/
+├── app/
+│   ├── __init__.py      # Inicializa la app Flask
+│   ├── models.py        # Modelos de base de datos
+│   ├── routes.py        # Rutas principales
+│   ├── forms.py         # Formularios Flask-WTF
+│   ├── templates/       # Plantillas HTML
+│   │   ├── base.html    # Plantilla base
+│   │   ├── login.html   # Página de login
+│   │   ├── dashboard.html # Página de configuración
+│   └── static/          # Archivos estáticos (CSS, JS, imágenes)
+│       ├── css/
+│       ├── js/
+│       └── img/
+├── migrations/          # Archivos de migraciones (creados automáticamente)
+├── venv/                # Entorno virtual (Python virtualenv)
+├── config.py            # Configuración del proyecto
+├── requirements.txt     # Dependencias del proyecto
+└── run.py               # Punto de entrada de la aplicación
