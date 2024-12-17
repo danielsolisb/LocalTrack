@@ -41,3 +41,19 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('routes.login'))
+
+
+@routes.route('/register')
+@login_required
+def register():
+    return render_template('register.html')
+
+@routes.route('/configuration')
+@login_required
+def configuration():
+    return render_template('configuration.html')
+
+@routes.route('/monitoring')
+@login_required
+def monitoring():
+    return render_template('monitoring.html')
