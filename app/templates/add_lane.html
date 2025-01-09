@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Agregar Parámetro de Carril</h2>
+
+<!-- Mensajes Flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div>
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Formulario para agregar un nuevo parámetro de carril -->
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.lane.label(class="form-label") }}
+        {{ form.lane(class="form-control", placeholder="Lane Number") }}
+    </div>
+    <div class="form-check">
+        {{ form.straight(class="form-check-input") }}
+        {{ form.straight.label(class="form-check-label") }}
+    </div>
+    <div class="form-check">
+        {{ form.turn(class="form-check-input") }}
+        {{ form.turn.label(class="form-check-label") }}
+    </div>
+    <div class="mb-3">
+        {{ form.turn_direction.label(class="form-label") }}
+        {{ form.turn_direction(class="form-control", placeholder="Turn Direction (e.g., Left, Right)") }}
+    </div>
+    <div class="mb-3">
+        {{ form.camera_id.label(class="form-label") }}
+        {{ form.camera_id(class="form-select") }}
+    </div>
+    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+</form>
+
+<!-- Tabla para mostrar carriles registrados -->
+<h3 class="mt-4">Carriles Registrados</h3>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Lane Number</th>
+            <th>Straight</th>
+            <th>Turn</th>
+            <th>Turn Direction</th>
+            <th>Camera ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lane in lane_parameters %}
+        <tr>
+            <td>{{ lane.id }}</td>
+            <td>{{ lane.lane }}</td>
+            <td>{{ 'Yes' if lane.straight else 'No' }}</td>
+            <td>{{ 'Yes' if lane.turn else 'No' }}</td>
+            <td>{{ lane.turn_direction or 'N/A' }}</td>
+            <td>{{ lane.camera.cam_id }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

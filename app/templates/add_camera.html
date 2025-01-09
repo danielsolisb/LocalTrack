@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Agregar Nueva Cámara</h2>
+
+<!-- Mensajes Flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div>
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Formulario para agregar una nueva cámara -->
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.cam_id.label(class="form-label") }}
+        {{ form.cam_id(class="form-control", placeholder="Camera ID") }}
+    </div>
+    <div class="mb-3">
+        {{ form.ip_address.label(class="form-label") }}
+        {{ form.ip_address(class="form-control", placeholder="IP Address") }}
+    </div>
+    <div class="mb-3">
+        {{ form.street.label(class="form-label") }}
+        {{ form.street(class="form-control", placeholder="Street") }}
+    </div>
+    <div class="mb-3">
+        {{ form.direction.label(class="form-label") }}
+        {{ form.direction(class="form-control", placeholder="Direction (e.g., North, South)") }}
+    </div>
+    <div class="mb-3">
+        {{ form.lanes.label(class="form-label") }}
+        {{ form.lanes(class="form-control", placeholder="Number of Lanes") }}
+    </div>
+    <div class="mb-3">
+        {{ form.intersection_id.label(class="form-label") }}
+        {{ form.intersection_id(class="form-select") }}
+    </div>
+    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+</form>
+
+<!-- Tabla para mostrar cámaras guardadas -->
+<h3 class="mt-4">Cámaras Guardadas</h3>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Camera ID</th>
+            <th>IP Address</th>
+            <th>Street</th>
+            <th>Direction</th>
+            <th>Number of Lanes</th>
+            <th>Intersection</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for camera in cameras %}
+        <tr>
+            <td>{{ camera.id }}</td>
+            <td>{{ camera.cam_id }}</td>
+            <td>{{ camera.ip_address }}</td>
+            <td>{{ camera.street }}</td>
+            <td>{{ camera.direction }}</td>
+            <td>{{ camera.lanes }}</td>
+            <td>{{ camera.intersection.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

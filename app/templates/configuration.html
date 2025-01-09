@@ -1,5 +1,108 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Configuración</h2>
-<p>Aquí se podrán configurar las variables de las intersecciones.</p>
+<h2>Configuración de Intersecciones</h2>
+
+<!-- Mensajes Flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div>
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Sincronizar desde la Nube -->
+<h3>Sincronizar Intersecciones desde la Nube</h3>
+<form method="POST">
+    <button type="submit" name="sync_cloud" class="btn btn-primary">Consultar en la Nube</button>
+</form>
+
+<h4 class="mt-4">Intersecciones Disponibles en la Nube</h4>
+{% if cloud_intersections %}
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Provincia</th>
+            <th>Cantón</th>
+            <th>Coordenadas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for intersection in cloud_intersections %}
+        <tr>
+            <td>{{ intersection.id }}</td>
+            <td>{{ intersection.name }}</td>
+            <td>{{ intersection.address }}</td>
+            <td>{{ intersection.province }}</td>
+            <td>{{ intersection.canton }}</td>
+            <td>{{ intersection.coordinates }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No se encontraron intersecciones en la nube.</p>
+{% endif %}
+
+
+<!-- Formulario para Agregar Manualmente -->
+<h3 class="mt-4">Agregar Intersección Manualmente</h3>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control", placeholder="Nombre de la intersección") }}
+    </div>
+    <div class="mb-3">
+        {{ form.address.label(class="form-label") }}
+        {{ form.address(class="form-control", placeholder="Dirección") }}
+    </div>
+    <div class="mb-3">
+        {{ form.province.label(class="form-label") }}
+        {{ form.province(class="form-control", placeholder="Provincia") }}
+    </div>
+    <div class="mb-3">
+        {{ form.canton.label(class="form-label") }}
+        {{ form.canton(class="form-control", placeholder="Cantón") }}
+    </div>
+    <div class="mb-3">
+        {{ form.coordinates.label(class="form-label") }}
+        {{ form.coordinates(class="form-control", placeholder="Coordenadas") }}
+    </div>
+    <div class="mb-3">
+        {{ form.cloud_id.label(class="form-label") }}
+        {{ form.cloud_id(class="form-control", placeholder="Ingrese el ID de la nube o déjelo vacío") }}
+    </div>
+    <button type="submit" name="manual_submit" class="btn btn-success">Guardar Manualmente</button>
+</form>
+
+<!-- Intersecciones Locales -->
+<h3 class="mt-4">Intersecciones Guardadas Localmente</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Provincia</th>
+            <th>Cantón</th>
+            <th>Coordenadas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for intersection in local_intersections %}
+        <tr>
+            <td>{{ intersection.name }}</td>
+            <td>{{ intersection.address }}</td>
+            <td>{{ intersection.province }}</td>
+            <td>{{ intersection.canton }}</td>
+            <td>{{ intersection.coordinates }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
