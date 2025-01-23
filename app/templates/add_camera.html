@@ -46,7 +46,7 @@
 
 <!-- Tabla para mostrar cámaras guardadas -->
 <h3 class="mt-4">Cámaras Guardadas</h3>
-<table class="table table-striped table-hover">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>
@@ -67,9 +67,10 @@
             <td>{{ camera.street }}</td>
             <td>{{ camera.direction }}</td>
             <td>{{ camera.lanes }}</td>
-            <td>{{ camera.intersection.name }}</td>
+            <td>{{ camera.intersection.name }}</td> <!-- Este campo debería funcionar ahora -->
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock %}

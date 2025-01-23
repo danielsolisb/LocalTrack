@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Measurements</h2>
+
+<!-- Filtros -->
+<form method="GET">
+    <div class="mb-3">
+        <label for="lane" class="form-label">Lane</label>
+        <select id="lane" name="lane" class="form-control">
+            {% for lane in lanes %}
+            <option value="{{ lane.id }}" {% if request.args.get('lane') == lane.id %}selected{% endif %}>
+                Lane {{ lane.lane }} - Camera: {{ lane.camera.cam_id }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.args.get('start_date') }}">
+    </div>
+    <div class="mb-3">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.args.get('end_date') }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<!-- Tabla de Resultados -->
+<h3 class="mt-4">Measurement Results</h3>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Timestamp</th>
+            <th>Lane</th>
+            <th>Vehicles Class A</th>
+            <th>Vehicles Class B</th>
+            <th>Vehicles Class C</th>
+            <th>Average Speed</th>
+            <th>Headway</th>
+            <th>Camera ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for measurement in measurements %}
+        <tr>
+            <td>{{ measurement.id }}</td>
+            <td>{{ measurement.timestamp }}</td>
+            <td>{{ measurement.lane }}</td>
+            <td>{{ measurement.vehicles_class_a }}</td>
+            <td>{{ measurement.vehicles_class_b }}</td>
+            <td>{{ measurement.vehicles_class_c }}</td>
+            <td>{{ measurement.average_speed }}</td>
+            <td>{{ measurement.headway }}</td>
+            <td>{{ measurement.camera.cam_id }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

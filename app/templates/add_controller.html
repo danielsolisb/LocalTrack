@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Register Traffic Controller</h2>
+
+<!-- Formulario para agregar controlador -->
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.controller_name.label(class="form-label") }}
+        {{ form.controller_name(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.controller_id.label(class="form-label") }}
+        {{ form.controller_id(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.intersection_id.label(class="form-label") }}
+        {{ form.intersection_id(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.adaptive_plan.label(class="form-label") }}
+        {{ form.adaptive_plan(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.green_1.label(class="form-label") }}
+        {{ form.green_1(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.green_2.label(class="form-label") }}
+        {{ form.green_2(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.green_3.label(class="form-label") }}
+        {{ form.green_3(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.green_4.label(class="form-label") }}
+        {{ form.green_4(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+</form>
+
+<!-- Tabla para mostrar controladores existentes -->
+<h3 class="mt-4">Registered Controllers</h3>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Identifier</th>
+            <th>Intersection</th>
+            <th>Adaptive Plan</th>
+            <th>Green 1</th>
+            <th>Green 2</th>
+            <th>Green 3</th>
+            <th>Green 4</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for controller in controllers %}
+        <tr>
+            <td>{{ controller.id }}</td>
+            <td>{{ controller.controller_name }}</td>
+            <td>{{ controller.controller_id }}</td>
+            <td>{{ controller.intersection.name }}</td>
+            <td>{{ controller.adaptive_plan }}</td>
+            <td>{{ controller.green_1 }}</td>
+            <td>{{ controller.green_2 }}</td>
+            <td>{{ controller.green_3 }}</td>
+            <td>{{ controller.green_4 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

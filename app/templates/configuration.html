@@ -78,31 +78,51 @@
         {{ form.cloud_id.label(class="form-label") }}
         {{ form.cloud_id(class="form-control", placeholder="Ingrese el ID de la nube o déjelo vacío") }}
     </div>
+    <div class="mb-3">
+        {{ form.num_phases.label(class="form-label") }}
+        {{ form.num_phases(class="form-control", placeholder="Number of Phases") }}
+    </div>    
+    <div class="mb-3">
+        {{ form.users.label(class="form-label") }}
+        {{ form.users(class="form-control") }}
+    </div>
+    
     <button type="submit" name="manual_submit" class="btn btn-success">Guardar Manualmente</button>
 </form>
 
 <!-- Intersecciones Locales -->
 <h3 class="mt-4">Intersecciones Guardadas Localmente</h3>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
+            <th>ID</th>
             <th>Nombre</th>
             <th>Dirección</th>
             <th>Provincia</th>
             <th>Cantón</th>
             <th>Coordenadas</th>
+            <th>Número de Fases</th>
+            <th>Usuarios</th> <!-- Nuevo campo -->
         </tr>
     </thead>
     <tbody>
         {% for intersection in local_intersections %}
         <tr>
+            <td>{{ intersection.id }}</td>
             <td>{{ intersection.name }}</td>
             <td>{{ intersection.address }}</td>
             <td>{{ intersection.province }}</td>
             <td>{{ intersection.canton }}</td>
             <td>{{ intersection.coordinates }}</td>
+            <td>{{ intersection.num_phases }}</td>
+            <td>
+                {% for user in intersection.users %}
+                    {{ user.username }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock %}
