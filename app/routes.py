@@ -4,6 +4,7 @@ from flask import Blueprint
 from . import db, login_manager
 from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController # Asegúrate de importar Intersection
 from .forms import LoginForm, IntersectionForm, CameraForm, LaneParameterForm, TrafficControllerForm
+from .decorators import admin_required, supervisor_required
 from werkzeug.security import check_password_hash
 import pymysql
 
@@ -47,6 +48,7 @@ def register():
 # Configuración de intersecciones
 @routes.route('/configuration', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def configuration():
     form = IntersectionForm()
 
@@ -95,6 +97,7 @@ def configuration():
 
 @routes.route('/add_controller', endpoint='add_controller',methods=['GET', 'POST'])
 @login_required
+@admin_required
 def add_controller():
     form = TrafficControllerForm()
 
@@ -123,12 +126,14 @@ def add_controller():
 
 @routes.route('/monitoring')
 @login_required
+@supervisor_required
 def monitoring():
     return render_template('monitoring.html')
 
 
 @routes.route('/add_camera', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def add_camera():
     form = CameraForm()
 
@@ -159,6 +164,7 @@ def add_camera():
 
 @routes.route('/add_lane', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def add_lane():
     form = LaneParameterForm()
 
@@ -188,6 +194,7 @@ def add_lane():
 
 @routes.route('/measurements', endpoint='measurements', methods=['GET'])
 @login_required
+@supervisor_required
 def measurements():
     # Obtener todos los carriles con sus cámaras asociadas
     lanes = LaneParameter.query.join(Camera).all()
