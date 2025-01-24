@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, PasswordField, IntegerField, BooleanField, SelectMultipleField
-from wtforms.validators import DataRequired, Optional, IPAddress, NumberRange
-
+from wtforms.validators import DataRequired, Optional, IPAddress, NumberRange, IPAddress
 
 
 
@@ -23,16 +22,14 @@ class IntersectionForm(FlaskForm):
     submit = SubmitField('Save Intersection')
 
 
+
+
 class TrafficControllerForm(FlaskForm):
-    controller_name = StringField('Controller Name', validators=[DataRequired()])
-    controller_id = StringField('Controller Identifier', validators=[DataRequired()])
-    intersection_id = SelectField('Intersection', validators=[DataRequired()], coerce=int)
-    adaptive_plan = StringField('Adaptive Plan (Hex)', validators=[DataRequired()])
-    green_1 = StringField('Green Phase 1 (Hex)', validators=[DataRequired()])
-    green_2 = StringField('Green Phase 2 (Hex)', validators=[DataRequired()])
-    green_3 = StringField('Green Phase 3 (Hex)', validators=[DataRequired()])
-    green_4 = StringField('Green Phase 4 (Hex)', validators=[DataRequired()])
-    submit = SubmitField('Save Controller')
+    name = StringField('Controller Name', validators=[DataRequired()])
+    identifier = StringField('Controller Identifier', validators=[DataRequired()])
+    ip_address = StringField('Controller IP Address', validators=[DataRequired(), IPAddress()])
+    intersection_id = SelectField('Intersection', coerce=int, validators=[DataRequired()])
+
 
 class CameraForm(FlaskForm):
     cam_id = StringField('Camera ID', validators=[DataRequired()])

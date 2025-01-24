@@ -33,17 +33,14 @@ class Intersection(db.Model):
 class TrafficController(db.Model):
     __tablename__ = 'traffic_controller'
     id = db.Column(db.Integer, primary_key=True)
-    controller_name = db.Column(db.String(100), nullable=False)  # Nombre del controlador
-    controller_id = db.Column(db.String(50), nullable=False)  # Identificador del controlador
-    intersection_id = db.Column(db.Integer, db.ForeignKey('intersection.id'), nullable=False)  # Relación con Intersection
-    adaptive_plan = db.Column(db.String(20), nullable=False)  # Registro de plan adaptativo (valor hex)
-    green_1 = db.Column(db.String(20), nullable=False)  # Verde 1 (valor hex)
-    green_2 = db.Column(db.String(20), nullable=False)  # Verde 2 (valor hex)
-    green_3 = db.Column(db.String(20), nullable=False)  # Verde 3 (valor hex)
-    green_4 = db.Column(db.String(20), nullable=False)  # Verde 4 (valor hex)
+    name = db.Column(db.String(100), nullable=False)  # Nombre del controlador
+    identifier = db.Column(db.String(100), nullable=False, unique=True)  # Identificador único del controlador
+    ip_address = db.Column(db.String(50), nullable=False)  # Dirección IP del controlador
 
     # Relación con Intersection
-    intersection = db.relationship('Intersection', backref='traffic_controllers', lazy=True)
+    intersection_id = db.Column(db.Integer, db.ForeignKey('intersection.id'), nullable=False)
+    intersection = db.relationship('Intersection', backref=db.backref('traffic_controllers', lazy=True))
+
 
 
 # Modelo de Cámara

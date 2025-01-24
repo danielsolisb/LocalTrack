@@ -98,30 +98,28 @@ def configuration():
 def add_controller():
     form = TrafficControllerForm()
 
-    # Cargar intersecciones existentes
+    # Poblar el campo Intersection en el formulario con las intersecciones disponibles
     form.intersection_id.choices = [(i.id, i.name) for i in Intersection.query.all()]
 
     if form.validate_on_submit():
-        # Crear y guardar el controlador en la base de datos
-        new_controller = TrafficController(
-            controller_name=form.controller_name.data,
-            controller_id=form.controller_id.data,
-            intersection_id=form.intersection_id.data,
-            adaptive_plan=form.adaptive_plan.data,
-            green_1=form.green_1.data,
-            green_2=form.green_2.data,
-            green_3=form.green_3.data,
-            green_4=form.green_4.data
+        # Crear y guardar el nuevo controlador
+        controller = TrafficController(
+            name=form.name.data,
+            identifier=form.identifier.data,
+            ip_address=form.ip_address.data,
+            intersection_id=form.intersection_id.data
         )
-        db.session.add(new_controller)
+        db.session.add(controller)
         db.session.commit()
-        flash('Traffic controller registered successfully!', 'success')
+        flash('Traffic Controller added successfully!', 'success')
         return redirect(url_for('routes.add_controller'))
 
-    # Obtener controladores existentes para mostrar en la tabla
+    # Obtener todos los controladores para mostrarlos en la tabla
     controllers = TrafficController.query.all()
 
     return render_template('add_controller.html', form=form, controllers=controllers)
+
+
 
 @routes.route('/monitoring')
 @login_required
