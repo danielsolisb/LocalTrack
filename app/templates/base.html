@@ -22,24 +22,33 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.dashboard') }}">Dashboard</a>
                     </li>
+
+                    <!-- Opciones solo para Admin -->
+                    {% if current_user.is_admin() %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.configuration') }}">Configuración</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.add_controller') }}">Register Controller</a>
-                    </li>                    
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('routes.add_camera') }}">Add Camera</a> <!-- Nuevo botón -->
+                        <a class="nav-link" href="{{ url_for('routes.add_camera') }}">Add Camera</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.add_lane') }}">Add Lane</a>
-                      </li>
+                    </li>
+                    {% endif %}
+
+                    <!-- Opciones accesibles para Supervisores y Admin -->
+                    {% if current_user.is_supervisor() or current_user.is_admin() %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.monitoring') }}">Monitoreo</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.measurements') }}">Measurements</a>
-                      </li>                      
+                    </li>
+                    {% endif %}
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('routes.logout') }}">Logout</a>
                     </li>
