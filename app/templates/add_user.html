@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Add New User</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        <label for="username">Username</label>
+        {{ form.username(class="form-control") }}
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        {{ form.password(class="form-control") }}
+    </div>
+    <div class="form-group">
+        <label for="role">Role</label>
+        {{ form.role(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">{{ form.submit.label }}</button>
+</form>
+
+<h3 class="mt-5">Existing Users</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

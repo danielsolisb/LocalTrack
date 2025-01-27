@@ -3,10 +3,12 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask import Blueprint
 from . import db, login_manager
 from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController # Asegúrate de importar Intersection
-from .forms import LoginForm, IntersectionForm, CameraForm, LaneParameterForm, TrafficControllerForm
+from .forms import LoginForm, IntersectionForm, CameraForm, LaneParameterForm, TrafficControllerForm, AddUserForm
 from .decorators import admin_required, supervisor_required
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 import pymysql
+
+
 
 routes = Blueprint('routes', __name__)  # Define un Blueprint para las rutas
 
@@ -94,6 +96,29 @@ def configuration():
         local_intersections=local_intersections,
         cloud_intersections=cloud_intersections
     )
+
+@routes.route('/add_user', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_user():
+    form = AddUserForm()
+
+    if form.validate_on_submit():
+        # Crear un nuevo usuario
+        new_user = User(
+            username=form.username.data,
+            password=generate_password_hash(form.password.data),  # Hasheamos la contraseña
+            role=form.role.data
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        flash('User added successfully!', 'success')
+        return redirect(url_for('routes.add_user'))
+
+    # Obtener todos los usuarios existentes para mostrarlos en la tabla
+    users = User.query.all()
+
+    return render_template('add_user.html', form=form, users=users)
 
 @routes.route('/add_controller', endpoint='add_controller',methods=['GET', 'POST'])
 @login_required

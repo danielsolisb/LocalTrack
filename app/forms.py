@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, PasswordField, IntegerField, BooleanField, SelectMultipleField
 from wtforms.validators import DataRequired, Optional, IPAddress, NumberRange, IPAddress
+from wtforms.validators import Length
 
 
 
@@ -21,7 +22,11 @@ class IntersectionForm(FlaskForm):
     users = SelectMultipleField('Users', choices=[], coerce=int, validators=[DataRequired()])
     submit = SubmitField('Save Intersection')
 
-
+class AddUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=50)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    role = SelectField('Role', choices=[('admin', 'Admin'), ('supervisor', 'Supervisor')], validators=[DataRequired()])
+    submit = SubmitField('Add User')
 
 
 class TrafficControllerForm(FlaskForm):
