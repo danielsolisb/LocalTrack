@@ -85,6 +85,16 @@ class LaneParameter(db.Model):
     # Clave foránea hacia Camera
     camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
 
+class LaneParameter(db.Model):
+    __tablename__ = 'lane_parameter'
+    id = db.Column(db.Integer, primary_key=True)
+    lane = db.Column(db.Integer, nullable=False)  # Número del carril
+    camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
+    
+    # Nueva relación con Flow
+    flow_id = db.Column(db.Integer, db.ForeignKey('flow.id'))
+
+
 # Modelo de Medición
 class Measurement(db.Model):
     __tablename__ = 'measurement'
@@ -125,9 +135,9 @@ class Flow(db.Model):
     phase_id = db.Column(db.Integer, db.ForeignKey('phase.id'), nullable=False)  # Relación con Fase
 
     # Relación muchos a muchos con LaneParameter (carriles)
-    lanes = db.relationship('LaneParameter', secondary='flow_lane', backref=db.backref('flows', lazy=True))
+    lanes = db.relationship('LaneParameter', secondary='flow_lane', backref=db.backref('flows', lazy=True, cascade="all, delete"))
 
-# Tabla intermedia para la relación muchos a muchos entre Flow y LaneParameter
+ Tabla intermedia para la relación muchos a muchos entre Flow y LaneParameter
 flow_lane = db.Table(
     'flow_lane',
     db.Column('flow_id', db.Integer, db.ForeignKey('flow.id'), primary_key=True),
