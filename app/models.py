@@ -137,7 +137,7 @@ class Flow(db.Model):
     # Relación muchos a muchos con LaneParameter (carriles)
     lanes = db.relationship('LaneParameter', secondary='flow_lane', backref=db.backref('flows', lazy=True, cascade="all, delete"))
 
- Tabla intermedia para la relación muchos a muchos entre Flow y LaneParameter
+ #Tabla intermedia para la relación muchos a muchos entre Flow y LaneParameter
 flow_lane = db.Table(
     'flow_lane',
     db.Column('flow_id', db.Integer, db.ForeignKey('flow.id'), primary_key=True),
