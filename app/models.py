@@ -99,3 +99,37 @@ class Measurement(db.Model):
 
     # Clave foránea hacia Camera
     camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
+
+#modelos hechos con deepseek
+
+# models.py
+
+# Modelo para Fase
+class Phase(db.Model):
+    __tablename__ = 'phase'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)  # Nombre de la fase
+    intersection_id = db.Column(db.Integer, db.ForeignKey('intersection.id'), nullable=False)  # Relación con Intersección
+
+    # Relación con Intersection
+    intersection = db.relationship('Intersection', backref=db.backref('phases', lazy=True))
+
+    # Relación con Flujos
+    flows = db.relationship('Flow', backref='phase', lazy=True, cascade="all, delete-orphan")
+
+# Modelo para Flujo
+class Flow(db.Model):
+    __tablename__ = 'flow'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)  # Nombre del flujo
+    phase_id = db.Column(db.Integer, db.ForeignKey('phase.id'), nullable=False)  # Relación con Fase
+
+    # Relación muchos a muchos con LaneParameter (carriles)
+    lanes = db.relationship('LaneParameter', secondary='flow_lane', backref=db.backref('flows', lazy=True))
+
+# Tabla intermedia para la relación muchos a muchos entre Flow y LaneParameter
+flow_lane = db.Table(
+    'flow_lane',
+    db.Column('flow_id', db.Integer, db.ForeignKey('flow.id'), primary_key=True),
+    db.Column('lane_id', db.Integer, db.ForeignKey('lane_parameter.id'), primary_key=True)
+)

@@ -24,18 +24,26 @@ localtrack/
 ├── app/
 │   ├── __init__.py      # Inicializa la app Flask
 │   ├── models.py        # Modelos de base de datos
+│   ├── decorators.py       
 │   ├── routes.py        # Rutas principales
 │   ├── forms.py         # Formularios Flask-WTF
 │   ├── templates/       # Plantillas HTML
 │   │   ├── base.html    # Plantilla base
 │   │   ├── login.html   # Página de login
 │   │   ├── dashboard.html # Página de configuración
+│   │   ├── add_camera.html
+│   │   ├── add_controller.html
+│   │   ├── add_lane.html
+│   │   ├── add_user.html
+│   │   ├── configuration.html
+│   │   ├── measurements.html
+│   │   ├── monitoring.html
+│   │   ├── register.html
 │   └── static/          # Archivos estáticos (CSS, JS, imágenes)
 │       ├── css/
 │       ├── js/
 │       └── img/
 ├── migrations/          # Archivos de migraciones (creados automáticamente)
-├── venv/                # Entorno virtual (Python virtualenv)
 ├── config.py            # Configuración del proyecto
 ├── requirements.txt     # Dependencias del proyecto
 └── run.py               # Punto de entrada de la aplicación

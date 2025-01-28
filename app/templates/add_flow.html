@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Add Flow</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.phase_id.label(class="form-label") }}
+            {{ form.phase_id(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.lanes.label(class="form-label") }}
+            {{ form.lanes(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+
+    <h3>Existing Flows</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phase</th>
+                <th>Lanes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flow in flows %}
+            <tr>
+                <td>{{ flow.name }}</td>
+                <td>{{ flow.phase.name }}</td>
+                <td>
+                    {% for lane in flow.lanes %}
+                    Lane {{ lane.lane }} (Camera {{ lane.camera.cam_id }}),
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

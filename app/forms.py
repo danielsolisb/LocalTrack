@@ -52,3 +52,20 @@ class LaneParameterForm(FlaskForm):
     turn_direction = StringField('Turn Direction (e.g., Left, Right)', validators=[Optional()])
     camera_id = SelectField('Camera', choices=[], coerce=int, validators=[DataRequired()])
     submit = SubmitField('Save Lane Parameter')
+
+
+#----------------------#
+# forms con deepseek
+
+# forms.py
+
+class PhaseForm(FlaskForm):
+    name = StringField('Phase Name', validators=[DataRequired()])
+    intersection_id = SelectField('Intersection', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Save Phase')
+
+class FlowForm(FlaskForm):
+    name = StringField('Flow Name', validators=[DataRequired()])
+    phase_id = SelectField('Phase', coerce=int, validators=[DataRequired()])
+    lanes = SelectMultipleField('Lanes', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Save Flow')

@@ -2,8 +2,8 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask import Blueprint
 from . import db, login_manager
-from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController # Asegúrate de importar Intersection
-from .forms import LoginForm, IntersectionForm, CameraForm, LaneParameterForm, TrafficControllerForm, AddUserForm
+from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController, Phase, Flow  # Asegúrate de importar Intersection
+from .forms import LoginForm, IntersectionForm, CameraForm, LaneParameterForm, TrafficControllerForm, AddUserForm, PhaseForm, FlowForm
 from .decorators import admin_required, supervisor_required
 from werkzeug.security import check_password_hash, generate_password_hash
 import pymysql
@@ -267,3 +267,60 @@ def fetch_intersections_from_cloud():
         return results  # Retornar los datos como una lista de diccionarios
     except pymysql.MySQLError:
         return None  # Devuelve None si hay un error de conexión
+
+#--------------------------------#
+#rutas con deepseek
+
+# routes.py
+
+@routes.route('/add_phase', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_phase():
+    form = PhaseForm()
+
+    # Poblar el campo de intersecciones
+    form.intersection_id.choices = [(i.id, i.name) for i in Intersection.query.all()]
+
+    if form.validate_on_submit():
+        phase = Phase(
+            name=form.name.data,
+            intersection_id=form.intersection_id.data
+        )
+        db.session.add(phase)
+        db.session.commit()
+        flash('Phase added successfully!', 'success')
+        return redirect(url_for('routes.add_phase'))
+
+    phases = Phase.query.all()
+    return render_template('add_phase.html', form=form, phases=phases)
+
+@routes.route('/add_flow', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_flow():
+    form = FlowForm()
+
+    # Poblar el campo de fases
+    form.phase_id.choices = [(p.id, p.name) for p in Phase.query.all()]
+
+    # Poblar el campo de carriles
+    form.lanes.choices = [(l.id, f"Lane {l.lane} (Camera {l.camera.cam_id})") for l in LaneParameter.query.all()]
+
+    if form.validate_on_submit():
+        flow = Flow(
+            name=form.name.data,
+            phase_id=form.phase_id.data
+        )
+        # Asociar carriles al flujo
+        for lane_id in form.lanes.data:
+            lane = LaneParameter.query.get(lane_id)
+            if lane:
+                flow.lanes.append(lane)
+        db.session.add(flow)
+        db.session.commit()
+        flash('Flow added successfully!', 'success')
+        return redirect(url_for('routes.add_flow'))
+
+    flows = Flow.query.all()
+    return render_template('add_flow.html', form=form, flows=flows)
