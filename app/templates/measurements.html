@@ -7,13 +7,13 @@
 <form method="GET">
     <div class="mb-3">
         <label for="lane" class="form-label">Lane</label>
-        <select id="lane" name="lane" class="form-control">
+        <select name="lane" name="lane" class="form-control">
             {% for lane in lanes %}
-            <option value="{{ lane.id }}" {% if request.args.get('lane') == lane.id %}selected{% endif %}>
-                Lane {{ lane.lane }} - Camera: {{ lane.camera.cam_id }}
-            </option>
+                <option value="{{ lane.id }}">{{ lane.lane }} - Camera: {{ lane.camera.cam_id }}</option>
             {% endfor %}
         </select>
+        
+
     </div>
     <div class="mb-3">
         <label for="start_date" class="form-label">Start Date</label>

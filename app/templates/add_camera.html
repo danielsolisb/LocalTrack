@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Agregar Nueva Cámara</h2>
+<h2>Add Camera</h2>
 
 <!-- Mensajes Flash -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <div>
-      {% for category, message in messages %}
+    {% for category, message in messages %}
+      {% if "camera" in message.lower() %}  <!-- Solo muestra los mensajes relacionados con cámaras -->
         <div class="alert alert-{{ category }}">{{ message }}</div>
-      {% endfor %}
-    </div>
+      {% endif %}
+    {% endfor %}
   {% endif %}
 {% endwith %}
 
@@ -19,7 +19,7 @@
     {{ form.hidden_tag() }}
     <div class="mb-3">
         {{ form.cam_id.label(class="form-label") }}
-        {{ form.cam_id(class="form-control", placeholder="Camera ID") }}
+        {{ form.cam_id(class="form-control", placeholder="Camera Name") }}
     </div>
     <div class="mb-3">
         {{ form.ip_address.label(class="form-label") }}
@@ -45,8 +45,8 @@
 </form>
 
 <!-- Tabla para mostrar cámaras guardadas -->
-<h3 class="mt-4">Cámaras Guardadas</h3>
-<table class="table table-striped">
+<h3 class="mt-4">Existing Cameras</h3>
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th>ID</th>
@@ -56,6 +56,7 @@
             <th>Direction</th>
             <th>Number of Lanes</th>
             <th>Intersection</th>
+            <th>Actions</th> <!-- Nueva columna para eliminar -->
         </tr>
     </thead>
     <tbody>
@@ -67,10 +68,17 @@
             <td>{{ camera.street }}</td>
             <td>{{ camera.direction }}</td>
             <td>{{ camera.lanes }}</td>
-            <td>{{ camera.intersection.name }}</td> <!-- Este campo debería funcionar ahora -->
+            <td>{{ camera.intersection.name }}</td>
+            <td>
+                <form action="{{ url_for('routes.delete_camera', camera_id=camera.id) }}" method="POST"
+                      onsubmit="return confirm('Are you sure you want to delete this camera?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 
 {% endblock %}

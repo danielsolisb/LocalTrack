@@ -48,51 +48,75 @@ class TrafficController(db.Model):
     intersection_id = db.Column(db.Integer, db.ForeignKey('intersection.id'), nullable=False)
     intersection = db.relationship('Intersection', backref=db.backref('traffic_controllers', lazy=True))
 
+class AdaptiveControlConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    controller_id = db.Column(db.Integer, db.ForeignKey('traffic_controller.id', ondelete='CASCADE'), unique=True, nullable=False)
+    saturation_flow = db.Column(db.Integer, default=1800, nullable=False)
+    amber_time = db.Column(db.Integer, default=3, nullable=False)  # ÁMBAR POR DEFECTO 3
+    clearance_time = db.Column(db.Integer, default=1, nullable=False)  # DESPEJE POR DEFECTO 1
+    green_time_1 = db.Column(db.Integer, default=0, nullable=False)
+    green_time_2 = db.Column(db.Integer, default=0, nullable=False)
+    green_time_3 = db.Column(db.Integer, default=0, nullable=False)
+    green_time_4 = db.Column(db.Integer, default=0, nullable=False)
+
+    controller = db.relationship('TrafficController', backref=db.backref('adaptive_config', lazy=True, cascade="all, delete-orphan"))
 
 
 # Modelo de Cámara
 class Camera(db.Model):
     __tablename__ = 'camera'
     id = db.Column(db.Integer, primary_key=True)
-    cam_id = db.Column(db.String(50), nullable=False)  # ID de la cámara
-    ip_address = db.Column(db.String(50), nullable=False)  # Dirección IP
-    street = db.Column(db.String(100), nullable=False)  # Calle
-    direction = db.Column(db.String(50), nullable=False)  # Dirección (norte, sur, etc.)
-    lanes = db.Column(db.Integer, nullable=False)  # Número de carriles
+    cam_id = db.Column(db.String(50), nullable=False)  
+    ip_address = db.Column(db.String(50), nullable=False)  
+    street = db.Column(db.String(100), nullable=False)  
+    direction = db.Column(db.String(50), nullable=False)  
+    lanes = db.Column(db.Integer, nullable=False)
 
-    # Clave foránea hacia Intersection
     intersection_id = db.Column(db.Integer, db.ForeignKey('intersection.id'), nullable=False)
 
-    # Relación con Intersection
     intersection = db.relationship('Intersection', backref='cameras', lazy=True)
 
-    # Relación con LaneParameters
-    lane_parameters = db.relationship('LaneParameter', backref='camera', lazy=True)
-
-    # Relación con Measurements
-    measurements = db.relationship('Measurement', backref='camera', lazy=True)
-
+    # ✅ Relación corregida para eliminar en cascada
+    lane_parameters = db.relationship('LaneParameter', back_populates='cam_ref', lazy=True, cascade="all, delete-orphan")
+    measurements = db.relationship('Measurement', backref='camera', lazy=True, cascade="all, delete-orphan")
 
 # Modelo de Parámetros de Carril
+#class LaneParameter(db.Model):
+#    __tablename__ = 'lane_parameter'
+#    id = db.Column(db.Integer, primary_key=True)
+#    lane = db.Column(db.Integer, nullable=False)  # Número de carril
+#    straight = db.Column(db.Boolean, default=False)  # Si el carril es recto
+#    turn = db.Column(db.Boolean, default=False)  # Si el carril es de giro
+#    turn_direction = db.Column(db.String(10), nullable=True)  # Dirección del giro (izquierda, derecha)
+#
+#    # Clave foránea hacia Camera
+#    camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
+
+#class LaneParameter(db.Model):
+#    __tablename__ = 'lane_parameter'
+#    id = db.Column(db.Integer, primary_key=True)
+#    lane = db.Column(db.Integer, nullable=False)  # Número del carril
+#    camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
+#    
+#    # Nueva relación con Flow
+#    flow_id = db.Column(db.Integer, db.ForeignKey('flow.id'))
 class LaneParameter(db.Model):
     __tablename__ = 'lane_parameter'
     id = db.Column(db.Integer, primary_key=True)
-    lane = db.Column(db.Integer, nullable=False)  # Número de carril
-    straight = db.Column(db.Boolean, default=False)  # Si el carril es recto
-    turn = db.Column(db.Boolean, default=False)  # Si el carril es de giro
-    turn_direction = db.Column(db.String(10), nullable=True)  # Dirección del giro (izquierda, derecha)
+    lane = db.Column(db.Integer, nullable=False)
+    straight = db.Column(db.Boolean, default=False)
+    turn = db.Column(db.Boolean, default=False)
+    turn_direction = db.Column(db.String(10), nullable=True)
 
-    # Clave foránea hacia Camera
     camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
+    flow_id = db.Column(db.Integer, db.ForeignKey('flow.id'))  
 
-class LaneParameter(db.Model):
-    __tablename__ = 'lane_parameter'
-    id = db.Column(db.Integer, primary_key=True)
-    lane = db.Column(db.Integer, nullable=False)  # Número del carril
-    camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
-    
-    # Nueva relación con Flow
-    flow_id = db.Column(db.Integer, db.ForeignKey('flow.id'))
+    # ✅ Relación corregida con alias adicional
+    cam_ref = db.relationship('Camera', back_populates='lane_parameters')
+
+    @property
+    def camera(self):
+        return self.cam_ref  # Alias para evitar errores en templates
 
 
 # Modelo de Medición

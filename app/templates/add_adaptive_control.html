@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Add Adaptive Control Configuration for {{ controller.name }}</h2>
+<a href="{{ url_for('routes.add_controller') }}" class="btn btn-secondary">Go Back</a>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.saturation_flow.label }} 
+        {{ form.saturation_flow(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.amber_time.label }} 
+        {{ form.amber_time(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.clearance_time.label }} 
+        {{ form.clearance_time(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.green_time_1.label }} 
+        {{ form.green_time_1(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.green_time_2.label }} 
+        {{ form.green_time_2(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.green_time_3.label }} 
+        {{ form.green_time_3(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.green_time_4.label }} 
+        {{ form.green_time_4(class="form-control") }}
+    </div>
+
+    {% if not config %}
+    <button type="submit" class="btn btn-primary">Save Configuration</button>
+    {% else %}
+    <button type="submit" class="btn btn-warning">Update Configuration</button>
+    {% endif %}
+</form>
+
+{% if config %}
+<h3>Existing Configuration</h3>
+<ul>
+    <li><strong>Saturation Flow:</strong> {{ config.saturation_flow }}</li>
+    <li><strong>Amber Time:</strong> {{ config.amber_time }}</li>
+    <li><strong>Clearance Time:</strong> {{ config.clearance_time }}</li>
+    <li><strong>Green Time 1:</strong> {{ config.green_time_1 }}</li>
+    <li><strong>Green Time 2:</strong> {{ config.green_time_2 }}</li>
+    <li><strong>Green Time 3:</strong> {{ config.green_time_3 }}</li>
+    <li><strong>Green Time 4:</strong> {{ config.green_time_4 }}</li>
+</ul>
+
+<form action="{{ url_for('routes.delete_adaptive_control', config_id=config.id) }}" method="post">
+    <button type="submit" class="btn btn-danger">Delete Configuration</button>
+</form>
+{% endif %}
+
+{% endblock %}
