@@ -111,7 +111,7 @@ class Measurement(db.Model):
     camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
 
 #modelos hechos con deepseek
-#branch de prueba commit
+#ja
 # models.py
 
 # Modelo para Fase
