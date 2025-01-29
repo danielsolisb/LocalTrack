@@ -60,12 +60,12 @@ class LaneParameterForm(FlaskForm):
 # forms.py
 
 class PhaseForm(FlaskForm):
-    name = StringField('Phase Name', validators=[DataRequired()])
+    name = StringField('Phase Number', validators=[DataRequired()])
     intersection_id = SelectField('Intersection', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Save Phase')
 
 class FlowForm(FlaskForm):
-    name = StringField('Flow Name', validators=[DataRequired()])
+    name = StringField('Flow Number', validators=[DataRequired()])
     phase_id = SelectField('Phase', coerce=int, validators=[DataRequired()])
     lanes = SelectMultipleField('Lanes', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Save Flow')
