@@ -49,3 +49,5 @@ localtrack/
 ├── config.py            # Configuración del proyecto
 ├── requirements.txt     # Dependencias del proyecto
 └── run.py               # Punto de entrada de la aplicación
+
+Punto de mejora 01
