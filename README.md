@@ -33,7 +33,9 @@ localtrack/
 │   │   ├── dashboard.html # Página de configuración
 │   │   ├── add_camera.html
 │   │   ├── add_controller.html
+│   │   ├── add_flow.html
 │   │   ├── add_lane.html
+│   │   ├── add_phase.html
 │   │   ├── add_user.html
 │   │   ├── configuration.html
 │   │   ├── measurements.html
