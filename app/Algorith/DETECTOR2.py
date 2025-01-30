@@ -201,7 +201,6 @@ def signal_handler(sig, frame):
     running = False
     server_socket.close()
     sys.exit(0)
-
 signal.signal(signal.SIGINT, signal_handler)
 
 # Iniciar servidor

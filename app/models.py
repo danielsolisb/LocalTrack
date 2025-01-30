@@ -134,6 +134,26 @@ class Measurement(db.Model):
     # Clave foránea hacia Camera
     camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'), nullable=False)
 
+
+#Modelo para mostrar datos procesados por el contador
+class AdaptiveResults(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    controller_id = db.Column(db.Integer, db.ForeignKey('traffic_controller.id', ondelete='CASCADE'), nullable=False)
+    phase = db.Column(db.String(50), nullable=False)
+    flow = db.Column(db.Integer, nullable=False)
+    sample_time = db.Column(db.Integer, nullable=False)  # Tiempo de muestra en segundos
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+    num_vehicles = db.Column(db.Integer, nullable=False)
+    num_lanes = db.Column(db.Integer, nullable=False)
+    direction = db.Column(db.Boolean, nullable=False)  # 1 = Recto, 0 = Giro
+
+    controller = db.relationship('TrafficController', backref=db.backref('adaptive_results', lazy=True, cascade="all, delete-orphan"))
+
+    def __repr__(self):
+        return f'<AdaptiveResults {self.id} - Phase {self.phase}>'
+
+
 #modelos hechos con deepseek
 #jasfdgsfdhgsfdh
 # models.py

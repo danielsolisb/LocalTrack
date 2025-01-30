@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Adaptive Control Results</h2>
+
+    <!-- Selector de Controladores -->
+    <form method="POST">
+        <label for="controller_id">Select Controller:</label>
+        <select name="controller_id" class="form-control" required>
+            {% for controller in controllers %}
+                <option value="{{ controller.id }}" {% if selected_controller and selected_controller.id == controller.id %}selected{% endif %}>
+                    {{ controller.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary mt-2">Load Results</button>
+    </form>
+
+    <!-- Resultados Adaptativos -->
+    {% if results %}
+    <h3>Results for {{ selected_controller.name }}</h3>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Phase</th>
+                <th>Flow</th>
+                <th>Sample Time</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Num Vehicles</th>
+                <th>Num Lanes</th>
+                <th>Direction</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.id }}</td>
+                <td>{{ result.phase }}</td>
+                <td>{{ result.flow }}</td>
+                <td>{{ result.sample_time }} sec</td>
+                <td>{{ result.start_time }}</td>
+                <td>{{ result.end_time }}</td>
+                <td>{{ result.num_vehicles }}</td>
+                <td>{{ result.num_lanes }}</td>
+                <td>{% if result.direction %}Straight{% else %}Turn{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="mt-3">No results available. Please select a controller.</p>
+    {% endif %}
+</div>
+{% endblock %}

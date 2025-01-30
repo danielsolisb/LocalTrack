@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask import Blueprint
 from . import db, login_manager
-from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController, Phase, Flow, AdaptiveControlConfig  # Asegúrate de importar Intersection
+from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController, Phase, Flow, AdaptiveControlConfig, AdaptiveResults, user_intersection   # Asegúrate de importar Intersection
 from .forms import LoginForm, IntersectionForm, CameraForm, LaneParameterForm, TrafficControllerForm, AddUserForm, PhaseForm, FlowForm, AdaptiveControlForm
 from .decorators import admin_required, supervisor_required
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -355,6 +355,36 @@ def measurements():
     print(measurements)  # Depuración para ver si realmente hay datos
 
     return render_template('measurements.html', lanes=lanes, measurements=measurements)
+
+@routes.route('/adaptive_results', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def adaptive_results():
+    # Obtener los controladores del usuario logeado a través de las intersecciones que administra
+    controllers = TrafficController.query.join(Intersection).join(user_intersection).filter(
+        user_intersection.c.user_id == current_user.id
+    ).all()
+
+    # Inicializar variables
+    results = None
+    selected_controller = None
+
+    # Si el usuario selecciona un controlador y envía el formulario
+    if request.method == 'POST':
+        controller_id = request.form.get('controller_id')
+
+        # Filtrar el controlador seleccionado asegurando que pertenece a una intersección del usuario
+        selected_controller = TrafficController.query.join(Intersection).join(user_intersection).filter(
+            TrafficController.id == controller_id,
+            user_intersection.c.user_id == current_user.id
+        ).first()
+
+        if selected_controller:
+            results = AdaptiveResults.query.filter_by(controller_id=selected_controller.id).all()
+        else:
+            flash("Invalid selection or no access to this controller.", "danger")
+
+    return render_template('adaptive_results.html', controllers=controllers, selected_controller=selected_controller, results=results)
 
 
 #@routes.route('/measurements', endpoint='measurements', methods=['GET'])
