@@ -53,6 +53,9 @@ class CameraForm(FlaskForm):
     direction = StringField('Direction (e.g., North, South)', validators=[DataRequired()])
     lanes = IntegerField('Number of Lanes', validators=[DataRequired()])
     intersection_id = SelectField('Intersection', choices=[], coerce=int, validators=[DataRequired()])
+    # Nuevos campos
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Save Camera')
 
 #class LaneParameterForm(FlaskForm):

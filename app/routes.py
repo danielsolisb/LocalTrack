@@ -1,12 +1,13 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from flask import Blueprint
+from flask import Blueprint, Response, jsonify
 from . import db, login_manager
-from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController, Phase, Flow, AdaptiveControlConfig, AdaptiveResults, user_intersection   # Asegúrate de importar Intersection
+from .models import User, Intersection, Camera, LaneParameter, Measurement, TrafficController, Phase, Flow, AdaptiveControlConfig, AdaptiveResults, user_intersection, PhaseTimingResults   # Asegúrate de importar Intersection
 from .forms import LoginForm, IntersectionForm, CameraForm, LaneParameterForm, TrafficControllerForm, AddUserForm, PhaseForm, FlowForm, AdaptiveControlForm
 from .decorators import admin_required, supervisor_required
 from werkzeug.security import check_password_hash, generate_password_hash
 import pymysql
+import cv2
 
 from datetime import datetime
 
@@ -221,18 +222,59 @@ def delete_adaptive_control(config_id):
     return redirect(url_for('routes.adaptive_control', controller_id=config.controller_id))
 
 
-@routes.route('/monitoring')
+@routes.route('/monitoring', methods=['GET', 'POST'])
 @login_required
 @supervisor_required
 def monitoring():
-    return render_template('monitoring.html')
+    # Obtener todas las cámaras disponibles con sus intersecciones
+    cameras = Camera.query.all()
+
+    selected_camera = None
+    if request.method == 'POST':
+        camera_id = request.form.get('camera_id')
+        selected_camera = Camera.query.get(camera_id)
+
+    return render_template('monitoring.html', cameras=cameras, selected_camera=selected_camera)
+#---------------------------------------#
+def generate_video_stream(rtsp_url):
+    cap = cv2.VideoCapture(rtsp_url)
+
+    if not cap.isOpened():
+        return None
+
+    while True:
+        success, frame = cap.read()
+        if not success:
+            break
+
+        # Codificar el frame en formato JPEG
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+    cap.release()
+#-------------------------------------#
+# Ruta para acceder al stream de la cámara seleccionada
+@routes.route('/video_feed/<int:camera_id>')
+@login_required
+@supervisor_required
+def video_feed(camera_id):
+    camera = Camera.query.get_or_404(camera_id)
+    if not camera.username or not camera.password:
+        return jsonify({'error': 'No username or password set for this camera'}), 400
+
+    # Construcción de la URL RTSP
+    rtsp_url = f'rtsp://{camera.username}:{camera.password}@{camera.ip_address}:554/stream_path'
+    
+    return Response(generate_video_stream(rtsp_url), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @routes.route('/add_camera', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add_camera():
-    
     form = CameraForm()
 
     # Obtener todas las intersecciones disponibles para el selector
@@ -247,7 +289,9 @@ def add_camera():
             street=form.street.data,
             direction=form.direction.data,
             lanes=form.lanes.data,
-            intersection_id=form.intersection_id.data
+            intersection_id=form.intersection_id.data,
+            username=form.username.data,  # Nuevo campo
+            password=form.password.data   # Nuevo campo
         )
         db.session.add(camera)
         db.session.commit()
@@ -258,6 +302,7 @@ def add_camera():
     cameras = Camera.query.all()
 
     return render_template('add_camera.html', form=form, cameras=cameras)
+
 
 @routes.route('/delete_camera/<int:camera_id>', methods=['POST'])
 @login_required
@@ -334,7 +379,7 @@ def measurements():
         lane_param = LaneParameter.query.get(lane_id)  # Obtener el objeto LaneParameter
         if lane_param:
             query = query.filter(Measurement.lane == lane_param.lane)  # Filtrar por número de carril
-            print(query)
+            #print(query)
 
     if start_date:
         try:
@@ -352,13 +397,13 @@ def measurements():
 
     # Obtener resultados y verificar si hay datos
     measurements = query.all()
-    print(measurements)  # Depuración para ver si realmente hay datos
+    #print(measurements)  # Depuración para ver si realmente hay datos
 
     return render_template('measurements.html', lanes=lanes, measurements=measurements)
 
 @routes.route('/adaptive_results', methods=['GET', 'POST'])
 @login_required
-@admin_required
+@supervisor_required
 def adaptive_results():
     # Obtener los controladores del usuario logeado a través de las intersecciones que administra
     controllers = TrafficController.query.join(Intersection).join(user_intersection).filter(
@@ -367,6 +412,7 @@ def adaptive_results():
 
     # Inicializar variables
     results = None
+    phase_timing_results = None
     selected_controller = None
 
     # Si el usuario selecciona un controlador y envía el formulario
@@ -380,11 +426,53 @@ def adaptive_results():
         ).first()
 
         if selected_controller:
-            results = AdaptiveResults.query.filter_by(controller_id=selected_controller.id).all()
+            # Obtener solo los últimos 50 registros de cada modelo
+            results = AdaptiveResults.query.filter_by(controller_id=selected_controller.id).order_by(
+                AdaptiveResults.id.desc()).limit(50).all()
+
+            phase_timing_results = PhaseTimingResults.query.filter_by(controller_id=selected_controller.id).order_by(
+                PhaseTimingResults.id.desc()).limit(50).all()
         else:
             flash("Invalid selection or no access to this controller.", "danger")
 
-    return render_template('adaptive_results.html', controllers=controllers, selected_controller=selected_controller, results=results)
+    return render_template(
+        'adaptive_results.html',
+        controllers=controllers,
+        selected_controller=selected_controller,
+        results=results,
+        phase_timing_results=phase_timing_results
+    )
+
+
+#@routes.route('/adaptive_results', methods=['GET', 'POST'])
+#@login_required
+#@admin_required
+#def adaptive_results():
+#    # Obtener los controladores del usuario logeado a través de las intersecciones que administra
+#    controllers = TrafficController.query.join(Intersection).join(user_intersection).filter(
+#        user_intersection.c.user_id == current_user.id
+#    ).all()
+#
+#    # Inicializar variables
+#    results = None
+#    selected_controller = None
+#
+#    # Si el usuario selecciona un controlador y envía el formulario
+#    if request.method == 'POST':
+#        controller_id = request.form.get('controller_id')
+#
+#        # Filtrar el controlador seleccionado asegurando que pertenece a una intersección del usuario
+#        selected_controller = TrafficController.query.join(Intersection).join(user_intersection).filter(
+#            TrafficController.id == controller_id,
+#            user_intersection.c.user_id == current_user.id
+#        ).first()
+#
+#        if selected_controller:
+#            results = AdaptiveResults.query.filter_by(controller_id=selected_controller.id).all()
+#        else:
+#            flash("Invalid selection or no access to this controller.", "danger")
+#
+#    return render_template('adaptive_results.html', controllers=controllers, selected_controller=selected_controller, results=results)
 
 
 #@routes.route('/measurements', endpoint='measurements', methods=['GET'])

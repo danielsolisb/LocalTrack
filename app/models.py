@@ -80,6 +80,10 @@ class Camera(db.Model):
     lane_parameters = db.relationship('LaneParameter', back_populates='cam_ref', lazy=True, cascade="all, delete-orphan")
     measurements = db.relationship('Measurement', backref='camera', lazy=True, cascade="all, delete-orphan")
 
+      # ✅ Nuevos campos
+    username = db.Column(db.String(50), nullable=True)
+    password = db.Column(db.String(100), nullable=True)
+
 # Modelo de Parámetros de Carril
 #class LaneParameter(db.Model):
 #    __tablename__ = 'lane_parameter'
@@ -152,6 +156,20 @@ class AdaptiveResults(db.Model):
 
     def __repr__(self):
         return f'<AdaptiveResults {self.id} - Phase {self.phase}>'
+
+class PhaseTimingResults(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    controller_id = db.Column(db.Integer, db.ForeignKey('traffic_controller.id', ondelete='CASCADE'), nullable=False)
+    phase = db.Column(db.String(50), nullable=False)
+    calculated_time = db.Column(db.Integer, nullable=False)  # Tiempo resultante
+    suggested_time = db.Column(db.Integer, nullable=False)  # Tiempo sugerido
+    start_time = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())  # Nueva columna
+    end_time = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())  # Nueva columna
+    
+    controller = db.relationship('TrafficController', backref=db.backref('phase_timing_results', lazy=True, cascade="all, delete-orphan"))
+
+    def __repr__(self):
+        return f'<PhaseTimingResults {self.id} - Phase {self.phase}>'    
 
 
 #modelos hechos con deepseek

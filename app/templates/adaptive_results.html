@@ -17,9 +17,8 @@
         <button type="submit" class="btn btn-primary mt-2">Load Results</button>
     </form>
 
-    <!-- Resultados Adaptativos -->
     {% if results %}
-    <h3>Results for {{ selected_controller.name }}</h3>
+    <h3 class="text-danger mt-4">Traffic Flow Results for {{ selected_controller.name }}</h3>
     <table class="table table-striped mt-3">
         <thead>
             <tr>
@@ -50,8 +49,35 @@
             {% endfor %}
         </tbody>
     </table>
-    {% else %}
-    <p class="mt-3">No results available. Please select a controller.</p>
     {% endif %}
+
+    {% if phase_timing_results %}
+    <h3 class="text-success mt-4">Phase Timing Calculations for {{ selected_controller.name }}</h3>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Phase</th>
+                <th>Calculated Time</th>
+                <th>Suggested Time</th>
+                <th>Start Time</th>  <!-- Nueva columna -->
+                <th>End Time</th>  <!-- Nueva columna -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for timing in phase_timing_results %}
+            <tr>
+                <td>{{ timing.id }}</td>
+                <td>{{ timing.phase }}</td>
+                <td>{{ timing.calculated_time }} sec</td>
+                <td>{{ timing.suggested_time }} sec</td>
+                <td>{{ timing.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>  <!-- Formato de fecha -->
+                <td>{{ timing.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>  <!-- Formato de fecha -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    
 </div>
 {% endblock %}

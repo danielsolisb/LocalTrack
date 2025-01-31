@@ -41,8 +41,17 @@
         {{ form.intersection_id.label(class="form-label") }}
         {{ form.intersection_id(class="form-select") }}
     </div>
+    <div class="mb-3">
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control", placeholder="Username") }}
+    </div>
+    <div class="mb-3">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control", placeholder="Password", type="password") }}
+    </div>
     <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
 </form>
+
 
 <!-- Tabla para mostrar cámaras guardadas -->
 <h3 class="mt-4">Existing Cameras</h3>
@@ -56,7 +65,9 @@
             <th>Direction</th>
             <th>Number of Lanes</th>
             <th>Intersection</th>
-            <th>Actions</th> <!-- Nueva columna para eliminar -->
+            <th>Username</th>
+            <th>Password</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -69,6 +80,8 @@
             <td>{{ camera.direction }}</td>
             <td>{{ camera.lanes }}</td>
             <td>{{ camera.intersection.name }}</td>
+            <td>{{ camera.username }}</td>
+            <td>{{ camera.password }}</td>
             <td>
                 <form action="{{ url_for('routes.delete_camera', camera_id=camera.id) }}" method="POST"
                       onsubmit="return confirm('Are you sure you want to delete this camera?');">
@@ -79,6 +92,5 @@
         {% endfor %}
     </tbody>
 </table>
-
 
 {% endblock %}

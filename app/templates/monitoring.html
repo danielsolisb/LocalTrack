@@ -1,5 +1,24 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Monitoreo</h2>
-<p>Aquí se podrá visualizar el monitoreo de las intersecciones.</p>
+<div class="container">
+    <h2>Monitoring</h2>
+    
+    <form method="POST">
+        <label for="camera_id">Select Camera:</label>
+        <select name="camera_id" class="form-control" required>
+            {% for camera in cameras %}
+                <option value="{{ camera.id }}" {% if selected_camera and selected_camera.id == camera.id %}selected{% endif %}>
+                    {{ camera.cam_id }} - {{ camera.ip_address }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary mt-2">Start Monitor</button>
+    </form>
+
+    {% if selected_camera %}
+    <h3 class="mt-4">View camera real time: {{ selected_camera.cam_id }}</h3>
+    <img src="{{ url_for('routes.video_feed', camera_id=selected_camera.id) }}" class="img-fluid border mt-3" style="width: 75%; max-height: 500px;">
+    {% endif %}
+</div>
 {% endblock %}
